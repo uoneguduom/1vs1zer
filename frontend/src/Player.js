@@ -1,7 +1,7 @@
 import * as THREE from "three"
-import { GRAVITY } from "./config"
+import { GRAVITY, PLAYER_STAND_HEIGHT } from "./config"
 
-const geometry = new THREE.BoxGeometry(3, 5, 3)
+const geometry = new THREE.BoxGeometry(3, PLAYER_STAND_HEIGHT, 3)
 const material = new THREE.MeshStandardMaterial({color : "rgb(255, 0, 4)"})
 
 export default class Player extends THREE.Object3D {
@@ -21,6 +21,7 @@ export default class Player extends THREE.Object3D {
   }
 
   animate(delta) {
+    delta = this.delta
     this.gravity()
     this.moove()
   }
@@ -32,6 +33,8 @@ export default class Player extends THREE.Object3D {
   }
 
   gravity() {
-    
+    if (this.position.y >= PLAYER_STAND_HEIGHT / 2 ) {
+      this.velocityY -= GRAVITY * delta
+    }
   }
 }
