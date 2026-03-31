@@ -49,14 +49,7 @@ export default class Game {
   }
 
 
-    this.player.animate(delta)
-    this.renderer = renderer;
-    this.light = new Light(scene);
-    this.devCamera = new DevCamera(renderer);
-    // this.test = new Test(scene);
-    this.map = new Map(scene);
-  }
-
+   
   animate(delta, elapsed) {
     // this.test.animate(delta);
   }
