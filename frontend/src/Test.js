@@ -8,11 +8,13 @@ export default class Test extends THREE.Object3D {
     this.scene = scene
     const material = new THREE.MeshStandardMaterial({color})
     this.mesh = new THREE.Mesh(geometry, material)
+    this.mesh.rotation.x = -Math.PI / 2
+    this.position.y = 0
     this.add(this.mesh)
     this.scene.add(this)
   }
 
   animate(delta) {
-    this.rotation.y += delta
+
   }
 }

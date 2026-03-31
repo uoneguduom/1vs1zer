@@ -13,8 +13,8 @@ export default class DevCamera {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    camera.position.z = -8
-    camera.position.y = 8
+    camera.position.z = -30
+    camera.position.y = 50
     controls.update()
 
     this.camera = camera
