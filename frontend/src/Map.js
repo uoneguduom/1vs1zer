@@ -11,6 +11,7 @@ export default class Map {
     this.scene = scene;
     this.map = new THREE.Group();
     this.scene.add(this.map);
+    this.wallBoundingBoxes = [];
     this.createMap();
   }
   createMap() {
@@ -62,5 +63,15 @@ export default class Map {
         }
       });
     });
+  }
+
+  buildWallBoundingBoxes() {
+    this.wallBoundingBoxes = [];
+    this.map.traverse((child) => {
+      if (!child.isMesh || !child.userData.isWall) return;
+      this.wallBoundingBoxes.push(new THREE.Box3().setFromObject(child));
+    });
+
+    return this.wallBoundingBoxes;
   }
 }
