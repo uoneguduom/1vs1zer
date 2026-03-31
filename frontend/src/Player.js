@@ -18,16 +18,39 @@ export default class Player extends THREE.Object3D {
     this.velocityY = 0
     this.velocityX = 0
     this.velocityZ = 0
+    this.control()
+  }
+
+  control() {
+    document.addEventListener("keydown", (e) => {
+      switch (e.code) {
+        case "KeyW": {
+          break;
+        }
+        case "KeyS": {
+          break;
+        }
+        case "KeyD": {
+          break;
+        }
+        case "KeyA": {
+          break;
+        }
+        case "KeyS": {
+          velocityY += 10
+          break
+        }
+      }
+    });
   }
 
   animate(delta) {
-    delta = this.delta
-    this.gravity()
-    this.moove()
+    this.gravity(delta)
+    this.moove(delta)
   }
   
-  moove() {
-    this.position.y += this.velocityY
+  moove(delta) {
+    this.position.y += this.velocityY * delta
     this.position.x += this.velocityX
     this.position.z += this.velocityZ
   }
