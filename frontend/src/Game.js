@@ -11,6 +11,7 @@ export default class Game {
     this.light = new Light(scene)
     this.devCamera = new DevCamera(renderer)
     this.player = new Player(scene)
+    this.test = new Test(scene)
   }
 
   animate(delta, elapsed) {
