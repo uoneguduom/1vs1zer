@@ -2,6 +2,7 @@ import DevCamera from "./DevCamera";
 import Light from "./Light";
 import * as THREE from "three"
 import Test from "./Test";
+import Player from "./Player";
 
 export default class Game {
   constructor(scene, renderer) {
@@ -9,10 +10,10 @@ export default class Game {
     this.renderer = renderer
     this.light = new Light(scene)
     this.devCamera = new DevCamera(renderer)
-    this.test = new Test(scene)
+    this.player = new Player(scene)
   }
 
   animate(delta, elapsed) {
-    this.test.animate(delta)
+    this.player.animate(delta)
   }
 }
