@@ -13,6 +13,7 @@ export default class Map {
     this.map = new THREE.Group();
     this.scene.add(this.map);
     this.wallBoundingBoxes = [];
+    this.spawnPoints = [];
     this.createMap();
   }
   createMap() {
@@ -57,6 +58,7 @@ export default class Map {
           halfWall.userData.isWall = true;
           this.map.add(halfWall);
         } else {
+          this.spawnPoints.push({ x: posX, z: posZ });
           const tile = new THREE.Mesh(
             new THREE.PlaneGeometry(1, 1),
             pathMat,
@@ -69,7 +71,14 @@ export default class Map {
     });
 
     this.buildWallBoundingBoxes();
+
+    
   }
+
+  getRandomSpawnPoint() {
+  const i = Math.floor(Math.random() * this.spawnPoints.length);
+  return this.spawnPoints[i];
+}
 
   buildWallBoundingBoxes() {
     this.wallBoundingBoxes = [];
