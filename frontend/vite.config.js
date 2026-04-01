@@ -1,12 +1,13 @@
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 
-export default defineConfig ({
-    server: {
-        proxy: {
-            "/ws": {
-                target: "ws://localhost:3000",
-                ws:true,
-            }
-        }
-    }
-})
+export default defineConfig({
+  server: {
+    host: true,
+    proxy: {
+      "/ws": {
+        target: "ws://localhost:3000",
+        ws: true,
+      },
+    },
+  },
+});

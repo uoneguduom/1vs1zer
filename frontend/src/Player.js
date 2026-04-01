@@ -5,12 +5,14 @@ const geometry = new THREE.BoxGeometry(0.5, PLAYER_STAND_HEIGHT, 0.5)
 const material = new THREE.MeshStandardMaterial({color : "rgb(255, 0, 4)"})
 
 export default class Player extends THREE.Object3D {
-  constructor(scene) {
+  constructor(scene, color = "#4caf50") {
     super()
     this.scene = scene
+    const material = new THREE.MeshStandardMaterial({color})
     this.body = new THREE.Mesh(geometry, material)
     this.add(this.body)
     this.scene.add(this)
+    this.color = color;
     this.position.y = PLAYER_STAND_HEIGHT / 2
     this.velocityY = 0
     this.velocityX = 0
@@ -76,8 +78,8 @@ export default class Player extends THREE.Object3D {
     const dirX = Math.sin(this.rotation.y) * -this.velocityZ + Math.cos(this.rotation.y) * -this.velocityX
     const dirZ = Math.cos(this.rotation.y) * -this.velocityZ + Math.sin(this.rotation.y) * this.velocityX
 
-    this.position.x += dirX
-    this.position.z += dirZ
+    this.position.x += dirX * delta
+    this.position.z += dirZ * delta
   }
 
   gravity(delta) {
