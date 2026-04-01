@@ -4,6 +4,7 @@ import Player from "./Player";
 import Map from "./Map";
 import PlayerCamera from "./PlayerCamera";
 import CollisionSystem from "./CollisionSystem";
+import BulletSystem from "./BulletSystem";
 
 export default class Game {
   constructor(scene, renderer) {
@@ -16,6 +17,7 @@ export default class Game {
     this.map = new Map(scene)
     this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
+    this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map)
     this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
     this.ws.onmessage = (event) => {
       const state = JSON.parse(event.data);
@@ -53,6 +55,7 @@ export default class Game {
     this.player.animate(delta)
     this.collisions.resolve()
     this.playerCamera.update()
+    this.bulletSystem.animate()
     this._sendLocalState()
   }
 }

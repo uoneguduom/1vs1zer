@@ -15,7 +15,7 @@ export default class Player extends THREE.Object3D {
     this.color = color;
     this.position.y = PLAYER_STAND_HEIGHT / 2
     this.velocityY = 0
-    this.velocityX = 0
+    this.velocityX = 0 
     this.velocityZ = 0
     this.isGrounded = false
     this.control()
@@ -25,22 +25,29 @@ export default class Player extends THREE.Object3D {
     document.addEventListener("keydown", (e) => {
       switch (e.code) {
         case "KeyW": {
-          this.velocityZ = PLAYER_SPEED
+          this.velocityZ = PLAYER_SPEED 
           break;
         }
         case "KeyS": {
-          this.velocityZ = -PLAYER_SPEED
+          this.velocityZ = -PLAYER_SPEED 
           break;
         }
         case "KeyD": {
-          this.velocityX = -PLAYER_SPEED
+          this.velocityX = -PLAYER_SPEED 
           break;
         }
         case "KeyA": {
-          this.velocityX = PLAYER_SPEED
+          this.velocityX = PLAYER_SPEED 
           break;
         }
         case "Space": {
+          if (this.isGrounded) {
+            this.velocityY = 5
+            this.isGrounded = false
+          }
+          break
+        }
+        case "ShifLeft": {
           if (this.isGrounded) {
             this.velocityY = 5
             this.isGrounded = false
