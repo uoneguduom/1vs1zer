@@ -17,7 +17,7 @@ function animate() {
 
   game.animate(delta, elapsed);
 
-  renderer.render(scene, game.devCamera.camera);
+  renderer.render(scene, game.playerCamera.camera);
 }
 
 renderer.setAnimationLoop(animate);

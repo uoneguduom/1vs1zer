@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { PI } from "three/tsl";
 
 const wallGeo = new THREE.BoxGeometry(1, 2, 1);
 const wallMat = new THREE.MeshStandardMaterial({ color: 0x00ffaa });
 
 const HalfwallGeo = new THREE.BoxGeometry(1, 1, 1);
-const pathMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
+const pathMat = new THREE.MeshStandardMaterial({ color: "rgb(47, 71, 94)" });
 
 export default class Map {
   constructor(scene) {
@@ -48,21 +49,26 @@ export default class Map {
         if (cell === 1) {
           const wall = new THREE.Mesh(wallGeo, wallMat);
           wall.position.set(posX, 1, posZ);
+          wall.userData.isWall = true;
           this.map.add(wall);
         } else if (cell === 2) {
           const halfWall = new THREE.Mesh(HalfwallGeo, wallMat);
           halfWall.position.set(posX, 0.5, posZ);
+          halfWall.userData.isWall = true;
           this.map.add(halfWall);
         } else {
           const tile = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 0.1, 1),
+            new THREE.PlaneGeometry(1, 1),
             pathMat,
           );
           tile.position.set(posX, 0, posZ);
+          tile.rotation.x = -Math.PI / 2;
           this.map.add(tile);
         }
       });
     });
+
+    this.buildWallBoundingBoxes();
   }
 
   buildWallBoundingBoxes() {
