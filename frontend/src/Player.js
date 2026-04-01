@@ -5,12 +5,14 @@ const geometry = new THREE.BoxGeometry(0.5, PLAYER_STAND_HEIGHT, 0.5)
 const material = new THREE.MeshStandardMaterial({color : "rgb(255, 0, 4)"})
 
 export default class Player extends THREE.Object3D {
-  constructor(scene) {
+  constructor(scene, color = "#4caf50") {
     super()
     this.scene = scene
+    const material = new THREE.MeshStandardMaterial({color})
     this.body = new THREE.Mesh(geometry, material)
     this.add(this.body)
     this.scene.add(this)
+    this.color = color;
     this.position.y = PLAYER_STAND_HEIGHT / 2
     this.velocityY = 0
     this.velocityX = 0 

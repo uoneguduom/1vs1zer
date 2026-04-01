@@ -15,14 +15,47 @@ export default class Game {
     this.devCamera = new DevCamera(renderer)
     this.playerCamera = new PlayerCamera(renderer, this.player)
     this.map = new Map(scene)
+    this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
     this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map)
+    this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
+    this.ws.onmessage = (event) => {
+      const state = JSON.parse(event.data);
+      if (state.type === "init") {
+        this.myId = state.id;
+      } else {
+        if (!this.remotePlayers[state.id]) {
+          this.remotePlayers[state.id] = new Player(
+            this.scene,
+            "rgb(255, 0, 0)",
+          );
+        }
+        this.remotePlayers[state.id].position.x = state.x;
+        this.remotePlayers[state.id].position.y = state.y;
+        this.remotePlayers[state.id].position.z = state.z;
+      }
+    };
   }
 
-  animate(delta) {
+  _sendLocalState() {
+    if (!this.myId) return;
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(
+        JSON.stringify({
+          id: this.myId,
+          x: this.player.position.x,
+          y: this.player.position.y,
+          z:this.player.position.z,
+        }),
+      );
+    }
+  }
+  
+  animate(delta, elapsed) {
     this.player.animate(delta)
     this.collisions.resolve()
     this.playerCamera.update()
-    this.bulletSystem.animate(delta)
+    this.bulletSystem.animate()
+    this._sendLocalState()
   }
 }
