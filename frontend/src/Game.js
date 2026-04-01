@@ -12,17 +12,22 @@ export default class Game {
     this.renderer = renderer
     this.light = new Light(scene)
     this.player = new Player(scene)
-    this.devCamera = new DevCamera(renderer)
+    // this.devCamera = new DevCamera(renderer)
     this.playerCamera = new PlayerCamera(renderer, this.player)
     this.map = new Map(scene)
     this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
-    this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map)
     this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
+    this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map, this.ws)
     this.ws.onmessage = (event) => {
       const state = JSON.parse(event.data);
       if (state.type === "init") {
         this.myId = state.id;
+      } else if (state.type === "shoot") {
+        this.bulletSystem.spawnBullet(
+          { x: state.x, y: state.y, z: state.z },
+          { x: state.dx, y: state.dy, z: state.dz }
+        )
       } else {
         if (!this.remotePlayers[state.id]) {
           this.remotePlayers[state.id] = new Player(
@@ -55,7 +60,7 @@ export default class Game {
     this.player.animate(delta)
     this.collisions.resolve()
     this.playerCamera.update()
-    this.bulletSystem.animate()
+    this.bulletSystem.animate(delta)
     this._sendLocalState()
   }
 }
