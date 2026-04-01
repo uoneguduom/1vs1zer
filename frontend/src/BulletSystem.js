@@ -7,11 +7,12 @@ const bulletGeo = new THREE.SphereGeometry(0.06, 6, 6)
 const bulletMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xffaa00 })
 
 export default class BulletSystem {
-  constructor(scene, player, playerCamera, map) {
+  constructor(scene, player, playerCamera, map, ws) {
     this.scene = scene
     this.player = player
     this.playerCamera = playerCamera
     this.map = map
+    this.ws = ws
     this.bullets = []
     this._setupShoot()
   }
@@ -25,14 +26,33 @@ export default class BulletSystem {
   }
 
   _shoot() {
-    const mesh = new THREE.Mesh(bulletGeo, bulletMat)
-
     const eyeOffset = new THREE.Vector3(0, 0.8, 0)
-    mesh.position.copy(this.player.position).add(eyeOffset)
+    const pos = this.player.position.clone().add(eyeOffset)
 
     const dir = new THREE.Vector3(0, 0, -1)
     dir.applyEuler(new THREE.Euler(this.playerCamera.pitch, this.player.rotation.y, 0, "YXZ"))
 
+    this._spawnMesh(pos, dir)
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({
+        type: "shoot",
+        x: pos.x, y: pos.y, z: pos.z,
+        dx: dir.x, dy: dir.y, dz: dir.z,
+      }))
+    }
+  }
+
+  spawnBullet(pos, dir) {
+    this._spawnMesh(
+      new THREE.Vector3(pos.x, pos.y, pos.z),
+      new THREE.Vector3(dir.x, dir.y, dir.z)
+    )
+  }
+
+  _spawnMesh(pos, dir) {
+    const mesh = new THREE.Mesh(bulletGeo, bulletMat)
+    mesh.position.copy(pos)
     this.scene.add(mesh)
     this.bullets.push({ mesh, dir, distance: 0 })
   }
