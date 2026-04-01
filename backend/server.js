@@ -24,4 +24,4 @@ wss.on("connection", (ws) =>{
     ws.on("close", () => clients.delete(id));
 });
 
-server.listen(3000, () => console.log("Server on port 3000"));
+server.listen(3000,'0.0.0.0', () => console.log("Server on port 3000"));

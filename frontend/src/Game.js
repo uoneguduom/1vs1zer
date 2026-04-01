@@ -16,7 +16,7 @@ export default class Game {
     this.map = new Map(scene)
     this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
-    this.ws = new WebSocket("ws://localhost:3000/ws");
+    this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
     this.ws.onmessage = (event) => {
       const state = JSON.parse(event.data);
       if (state.type === "init") {
