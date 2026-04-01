@@ -13,7 +13,7 @@ export default class Player extends THREE.Object3D {
     this.scene.add(this)
     this.position.y = PLAYER_STAND_HEIGHT / 2
     this.velocityY = 0
-    this.velocityX = 0
+    this.velocityX = 0 
     this.velocityZ = 0
     this.isGrounded = false
     this.control()
@@ -23,22 +23,29 @@ export default class Player extends THREE.Object3D {
     document.addEventListener("keydown", (e) => {
       switch (e.code) {
         case "KeyW": {
-          this.velocityZ = PLAYER_SPEED
+          this.velocityZ = PLAYER_SPEED 
           break;
         }
         case "KeyS": {
-          this.velocityZ = -PLAYER_SPEED
+          this.velocityZ = -PLAYER_SPEED 
           break;
         }
         case "KeyD": {
-          this.velocityX = -PLAYER_SPEED
+          this.velocityX = -PLAYER_SPEED 
           break;
         }
         case "KeyA": {
-          this.velocityX = PLAYER_SPEED
+          this.velocityX = PLAYER_SPEED 
           break;
         }
         case "Space": {
+          if (this.isGrounded) {
+            this.velocityY = 5
+            this.isGrounded = false
+          }
+          break
+        }
+        case "ShifLeft": {
           if (this.isGrounded) {
             this.velocityY = 5
             this.isGrounded = false
@@ -76,8 +83,8 @@ export default class Player extends THREE.Object3D {
     const dirX = Math.sin(this.rotation.y) * -this.velocityZ + Math.cos(this.rotation.y) * -this.velocityX
     const dirZ = Math.cos(this.rotation.y) * -this.velocityZ + Math.sin(this.rotation.y) * this.velocityX
 
-    this.position.x += dirX
-    this.position.z += dirZ
+    this.position.x += dirX * delta
+    this.position.z += dirZ * delta
   }
 
   gravity(delta) {
