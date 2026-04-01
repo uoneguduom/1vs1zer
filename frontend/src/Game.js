@@ -8,17 +8,18 @@ import BulletSystem from "./BulletSystem";
 
 export default class Game {
   constructor(scene, renderer) {
+    this.map = new Map(scene)
     this.scene = scene;
     this.renderer = renderer
     this.light = new Light(scene)
-    this.player = new Player(scene)
     // this.devCamera = new DevCamera(renderer)
+    this.player = new Player(scene, this.map)
     this.playerCamera = new PlayerCamera(renderer, this.player)
-    this.map = new Map(scene)
     this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
     this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
     this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map, this.ws)
+    this.bulletSystem.remotePlayers = this.remotePlayers;
     this.ws.onmessage = (event) => {
       const state = JSON.parse(event.data);
       if (state.type === "init") {
@@ -32,6 +33,7 @@ export default class Game {
         if (!this.remotePlayers[state.id]) {
           this.remotePlayers[state.id] = new Player(
             this.scene,
+            null,
             "rgb(255, 0, 0)",
           );
         }

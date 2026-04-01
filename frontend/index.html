@@ -15,6 +15,40 @@
         pointer-events: none;
         user-select: none;
       }
+      #hp {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        color: red;
+        font-family: monospace;
+        font-size: 36px;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(255,0,0,0.8);
+        pointer-events: none;
+      }
+      #hitmarker {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.1s;
+      }
+      #damage-indicator {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: red;
+        font-family: monospace;
+        font-size: 64px;
+        font-weight: bold;
+        text-shadow: 0 0 16px rgba(255, 0, 0, 0.9);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 2s ease-out;
+      }
     </style>
   </head>
   <body>
@@ -23,6 +57,14 @@
       <line x1="10" y1="12" x2="10" y2="18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       <line x1="2"  y1="10" x2="8"  y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       <line x1="12" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div id="hp">❤ 100</div>
+    <div id="damage-indicator"></div>
+    <svg id="hitmarker" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <line x1="2"  y1="2"  x2="16" y2="16" stroke="red" stroke-width="3" stroke-linecap="round"/>
+      <line x1="44" y1="2"  x2="58" y2="16" stroke="red" stroke-width="3" stroke-linecap="round"/>
+      <line x1="2"  y1="58" x2="16" y2="44" stroke="red" stroke-width="3" stroke-linecap="round"/>
+      <line x1="44" y1="58" x2="58" y2="44" stroke="red" stroke-width="3" stroke-linecap="round"/>
     </svg>
     <script type="module" src="./src/main.js"></script>
   </body>
