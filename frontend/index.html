@@ -26,6 +26,17 @@
         text-shadow: 0 0 8px rgba(255,0,0,0.8);
         pointer-events: none;
       }
+      #kills {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        color: white;
+        font-family: monospace;
+        font-size: 36px;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(255,255,255,0.6);
+        pointer-events: none;
+      }
       #hitmarker {
         position: fixed;
         top: 50%;
@@ -34,6 +45,25 @@
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.1s;
+      }
+      #dash-bar-container {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;
+        height: 10px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 5px;
+        pointer-events: none;
+      }
+      #dash-bar {
+        height: 100%;
+        width: 100%;
+        background: cyan;
+        border-radius: 5px;
+        transition: background 0.1s;
       }
       #damage-indicator {
         position: fixed;
@@ -59,6 +89,8 @@
       <line x1="12" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <div id="hp">❤ 100</div>
+    <div id="kills">☠ 0</div>
+    <div id="dash-bar-container"><div id="dash-bar"></div></div>
     <div id="damage-indicator"></div>
     <svg id="hitmarker" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
       <line x1="2"  y1="2"  x2="16" y2="16" stroke="red" stroke-width="3" stroke-linecap="round"/>

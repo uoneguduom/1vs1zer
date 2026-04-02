@@ -10,6 +10,7 @@ export default class PlayerCamera {
       0.1,
       1000,
     )
+    this.camera.layers.disable(1)
 
     this.offset = new THREE.Vector3(0, 0.8, 0)
     this.pitch = 0

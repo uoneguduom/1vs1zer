@@ -92,15 +92,6 @@ export default class BulletSystem {
         const playerBB = new THREE.Box3().setFromObject(this.player);
         if (b.isEnemy && !this.player.isDead && bb.intersectsBox(playerBB)) {
           remove = true;
-          this.player.hp -= 25;
-          this.hpDisplay.textContent = "❤ " + this.player.hp;
-          this.damageIndicator.textContent = "-25";
-          this.damageIndicator.style.transition = "none";
-          this.damageIndicator.style.opacity = "1";
-          requestAnimationFrame(() => {
-            this.damageIndicator.style.transition = "opacity 2s ease-out";
-            this.damageIndicator.style.opacity = "0";
-          });
         }
 
         if (!b.isEnemy && this.remotePlayers) {
@@ -111,6 +102,9 @@ export default class BulletSystem {
               remove = true;
               this.hitmarker.style.opacity = "1";
               setTimeout(() => (this.hitmarker.style.opacity = "0"), 100);
+              if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                this.ws.send(JSON.stringify({ type: "hit", targetId: id, shooterId: this.myId }));
+              }
               break;
             }
           }

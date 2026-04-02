@@ -14,16 +14,46 @@ export default class Game {
     this.light = new Light(scene)
     // this.devCamera = new DevCamera(renderer)
     this.player = new Player(scene, this.map)
+    this.player.body.layers.set(1)
     this.playerCamera = new PlayerCamera(renderer, this.player)
     this.remotePlayers = {}
     this.collisions = new CollisionSystem(this.player, this.map)
     this.ws = new WebSocket(`ws://${window.location.hostname}:3000/ws`);
     this.bulletSystem = new BulletSystem(scene, this.player, this.playerCamera, this.map, this.ws)
     this.bulletSystem.remotePlayers = this.remotePlayers;
+    this.player.ws = this.ws;
+    this.kills = 0;
+    this.killsDisplay = document.getElementById("kills");
     this.ws.onmessage = (event) => {
       const state = JSON.parse(event.data);
       if (state.type === "init") {
         this.myId = state.id;
+        this.bulletSystem.myId = state.id;
+        this.player.myId = state.id;
+      } else if (state.type === "hit") {
+        if (state.targetId === this.myId) {
+          this.player.lastHitBy = state.shooterId;
+          this.player.hp -= 25;
+          document.getElementById("hp").textContent = "❤ " + this.player.hp;
+          const ind = document.getElementById("damage-indicator");
+          ind.textContent = "-25";
+          ind.style.transition = "none";
+          ind.style.opacity = "1";
+          requestAnimationFrame(() => {
+            ind.style.transition = "opacity 2s ease-out";
+            ind.style.opacity = "0";
+          });
+        }
+        if (state.shooterId === this.myId && state.killed) {
+          this.kills++;
+          this.killsDisplay.textContent = "☠ " + this.kills;
+        }
+      } else if (state.type === "death") {
+        this.map.spawnDeathPile(state.x, state.z);
+        if (state.killerId === this.myId) {
+          this.kills++;
+          this.killsDisplay.textContent = "☠ " + this.kills;
+        }
       } else if (state.type === "shoot") {
         this.bulletSystem.spawnBullet(
           { x: state.x, y: state.y, z: state.z },
@@ -60,6 +90,9 @@ export default class Game {
   
   animate(delta, elapsed) {
     this.player.animate(delta)
+    this.player.mooveX(delta)
+    this.collisions.resolve()
+    this.player.mooveZ(delta)
     this.collisions.resolve()
     this.playerCamera.update()
     this.bulletSystem.animate(delta)
