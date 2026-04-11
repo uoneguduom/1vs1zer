@@ -9,8 +9,13 @@ export default class CollisionSystem {
 
   resolve() {
     this._playerBox.setFromObject(this.player)
+    const px = this.player.position.x
+    const pz = this.player.position.z
 
     for (const wallBox of this.map.wallBoundingBoxes) {
+      // Broad phase: ignore walls more than 2 units away
+      if (wallBox.min.x > px + 2 || wallBox.max.x < px - 2 ||
+          wallBox.min.z > pz + 2 || wallBox.max.z < pz - 2) continue
       if (!this._playerBox.intersectsBox(wallBox)) continue
 
       const overlapX = Math.min(this._playerBox.max.x, wallBox.max.x) - Math.max(this._playerBox.min.x, wallBox.min.x)
