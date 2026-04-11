@@ -17,6 +17,8 @@ export default class Map {
     this.scene.add(this.map);
     this.wallBoundingBoxes = [];
     this.spawnPoints = [];
+    this._wallMeshes = [];   // flat array — avoid scene.traverse
+    this._topYCache  = {};   // 'x,z' -> maxY for death piles
     this.createMap();
   }
 
@@ -72,6 +74,9 @@ export default class Map {
           cube.position.set(posX, 0.5 + i, posZ);
           cube.userData.isWall = true;
           this.map.add(cube);
+          this._wallMeshes.push(cube);
+          const key = `${posX},${posZ}`;
+          this._topYCache[key] = Math.max(this._topYCache[key] ?? 0, 0.5 + i + 0.5);
         }
       });
     });
@@ -94,19 +99,14 @@ export default class Map {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), invisibleMat);
       mesh.position.set(x, y, z);
       mesh.userData.isWall = true;
+      mesh.userData.isBoundary = true; // indestructible
       this.map.add(mesh);
+      this._wallMeshes.push(mesh);
     }
   }
 
   _getTopY(cx, cz) {
-    let top = 0;
-    this.map.traverse((child) => {
-      if (!child.isMesh || !child.userData.isWall) return;
-      if (Math.abs(child.position.x - cx) < 0.1 && Math.abs(child.position.z - cz) < 0.1) {
-        top = Math.max(top, child.position.y + 0.5);
-      }
-    });
-    return top;
+    return this._topYCache[`${cx},${cz}`] ?? 0;
   }
 
   spawnDeathPile(x, z) {
@@ -123,7 +123,10 @@ export default class Map {
         cube.position.set(cx, baseY + 0.5 + i, cz);
         cube.userData.isWall = true;
         this.map.add(cube);
+        this._wallMeshes.push(cube);
         this.wallBoundingBoxes.push(new THREE.Box3().setFromObject(cube));
+        const key = `${cx},${cz}`;
+        this._topYCache[key] = Math.max(this._topYCache[key] ?? 0, baseY + 0.5 + i + 0.5);
       }
     }
   }
@@ -134,12 +137,29 @@ export default class Map {
   }
 
   buildWallBoundingBoxes() {
-    this.wallBoundingBoxes = [];
-    this.map.traverse((child) => {
-      if (!child.isMesh || !child.userData.isWall) return;
-      this.wallBoundingBoxes.push(new THREE.Box3().setFromObject(child));
-    });
-
+    this.wallBoundingBoxes = this._wallMeshes.map(m => new THREE.Box3().setFromObject(m));
     return this.wallBoundingBoxes;
+  }
+
+  removeBlocksInRadius(cx, cy, cz, radius) {
+    const r2 = radius * radius;
+    const toRemove = [];
+
+    for (const child of this._wallMeshes) {
+      if (child.userData.isBoundary) continue;
+      const dx = child.position.x - cx;
+      const dy = child.position.y - cy;
+      const dz = child.position.z - cz;
+      if (dx*dx + dy*dy + dz*dz <= r2) toRemove.push(child);
+    }
+
+    for (const child of toRemove) {
+      this.map.remove(child);
+      this._wallMeshes.splice(this._wallMeshes.indexOf(child), 1);
+      const key = `${Math.round(child.position.x)},${Math.round(child.position.z)}`;
+      delete this._topYCache[key];
+    }
+
+    if (toRemove.length > 0) this.buildWallBoundingBoxes();
   }
 }

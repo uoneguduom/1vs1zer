@@ -2,11 +2,73 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>My first three.js app</title>
+    <title>1vs1zer</title>
     <style>
-      body {
-        margin: 0;
+      body { margin: 0; background: #1a1a2e; }
+
+      /* ── LOBBY ── */
+      #lobby {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #1a1a2e;
+        color: white;
+        font-family: monospace;
+        z-index: 100;
       }
+      #lobby h1 { font-size: 48px; margin-bottom: 32px; letter-spacing: 4px; }
+      #lobby input {
+        font-size: 24px;
+        padding: 10px 20px;
+        border: 2px solid cyan;
+        background: transparent;
+        color: white;
+        outline: none;
+        text-align: center;
+        margin-bottom: 16px;
+        font-family: monospace;
+      }
+      #lobby button {
+        font-size: 20px;
+        padding: 10px 32px;
+        background: cyan;
+        color: #1a1a2e;
+        border: none;
+        cursor: pointer;
+        font-family: monospace;
+        font-weight: bold;
+      }
+      #lobby-status { margin-top: 16px; font-size: 16px; color: #aaa; }
+
+      /* ── LEADERBOARD ── */
+      #leaderboard {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        font-family: monospace;
+        font-size: 15px;
+        font-weight: bold;
+        pointer-events: none;
+        background: rgba(0,0,0,0.50);
+        padding: 8px 16px 10px;
+        border-radius: 5px;
+        min-width: 170px;
+        line-height: 1.7;
+        letter-spacing: 1px;
+      }
+      #leaderboard .lb-title {
+        color: rgba(255,255,255,0.55);
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      /* ── HUD ── */
+      #hud { display: none; }
       #crosshair {
         position: fixed;
         top: 50%;
@@ -37,14 +99,17 @@
         text-shadow: 0 0 8px rgba(255,255,255,0.6);
         pointer-events: none;
       }
-      #hitmarker {
+      #timer {
         position: fixed;
-        top: 50%;
+        top: 20px;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translateX(-50%);
+        color: white;
+        font-family: monospace;
+        font-size: 32px;
+        font-weight: bold;
+        text-shadow: 0 0 8px rgba(255,255,255,0.6);
         pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.1s;
       }
       #dash-bar-container {
         position: fixed;
@@ -79,26 +144,86 @@
         opacity: 0;
         transition: opacity 2s ease-out;
       }
+      #hitmarker {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.1s;
+      }
+      #weapon-name {
+        position: fixed;
+        bottom: 52px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-family: monospace;
+        font-size: 18px;
+        font-weight: bold;
+        letter-spacing: 3px;
+        text-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 2px black;
+        pointer-events: none;
+        text-transform: uppercase;
+      }
+
+      /* ── END SCREEN ── */
+      #end-screen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        color: white;
+        font-family: monospace;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      #end-screen h2 { font-size: 40px; margin-bottom: 24px; }
+      #end-scores { font-size: 24px; line-height: 2; }
     </style>
   </head>
   <body>
-    <svg id="crosshair" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <!-- LOBBY -->
+    <div id="lobby">
+      <h1>1VS1ZER</h1>
+      <input id="pseudo-input" type="text" maxlength="16" placeholder="ton pseudo" />
+      <button id="join-btn">REJOINDRE</button>
+      <div id="lobby-status">En attente d'un adversaire...</div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div id="leaderboard"><div class="lb-title">Kills</div></div>
+      <div id="timer">5:00</div>
+      <div id="hp">❤ 100</div>
+      <div id="kills">☠ 0</div>
+      <div id="damage-indicator"></div>
+      <div id="weapon-name"></div>
+      <div id="dash-bar-container"><div id="dash-bar"></div></div>
+    </div>
+
+    <svg id="crosshair" style="display:none" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
       <line x1="10" y1="2" x2="10" y2="8"  stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       <line x1="10" y1="12" x2="10" y2="18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       <line x1="2"  y1="10" x2="8"  y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       <line x1="12" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <div id="hp">❤ 100</div>
-    <div id="kills">☠ 0</div>
-    <div id="dash-bar-container"><div id="dash-bar"></div></div>
-    <div id="damage-indicator"></div>
     <svg id="hitmarker" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
       <line x1="2"  y1="2"  x2="16" y2="16" stroke="red" stroke-width="3" stroke-linecap="round"/>
       <line x1="44" y1="2"  x2="58" y2="16" stroke="red" stroke-width="3" stroke-linecap="round"/>
       <line x1="2"  y1="58" x2="16" y2="44" stroke="red" stroke-width="3" stroke-linecap="round"/>
       <line x1="44" y1="58" x2="58" y2="44" stroke="red" stroke-width="3" stroke-linecap="round"/>
     </svg>
+
+    <!-- END SCREEN -->
+    <div id="end-screen">
+      <h2>PARTIE TERMINÉE</h2>
+      <div id="end-scores"></div>
+    </div>
+
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>
-
